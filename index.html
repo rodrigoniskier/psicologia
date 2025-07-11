@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redimindo a Psicologia: Estudo Reformado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos personalizados para complementar o Tailwind CSS */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f9ff; /* Azul muito claro */
+        }
+
+        /* Efeito de brilho nos botões */
+        .menu-button:hover {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); /* Sombra azul no hover */
+            transform: translateY(-2px);
+        }
+        .menu-button.active {
+            background-color: #1d4ed8; /* Azul mais escuro para o botão ativo */
+            color: white;
+            box-shadow: 0 0 10px rgba(29, 78, 216, 0.6);
+        }
+
+        /* Estilos para a barra de rolagem */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e0f2fe;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #3b82f6;
+            border-radius: 10px;
+            border: 2px solid #e0f2fe;
+        }
+        
+        /* Estilos para os Flashcards */
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            max-width: 500px;
+            height: 300px;
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .flip-card-front {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b); /* Gradiente amarelo/laranja */
+            color: #422006;
+        }
+        .flip-card-back {
+            background: linear-gradient(135deg, #22c55e, #16a34a); /* Gradiente verde */
+            color: white;
+            transform: rotateY(180deg);
+        }
+        
+        /* Animação para o conteúdo aparecer */
+        .content-section {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Estilo para o Quiz */
+        .quiz-option {
+            transition: all 0.2s ease-in-out;
+        }
+        .quiz-option:hover {
+            background-color: #dbeafe; /* Azul claro no hover */
+            transform: scale(1.02);
+        }
+        .quiz-option.correct {
+            background-color: #dcfce7 !important; /* Verde claro para resposta correta */
+            border-color: #22c55e;
+            color: #15803d;
+        }
+        .quiz-option.incorrect {
+            background-color: #fee2e2 !important; /* Vermelho claro para resposta incorreta */
+            border-color: #ef4444;
+            color: #b91c1c;
+        }
+        .quiz-option.disabled {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        /* Estilo para o menu mobile */
+        #mobile-menu-container {
+            transition: transform 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-blue-50 text-gray-800">
+
+    <div class="flex flex-col min-h-screen">
+        <!-- Header Mobile -->
+        <header class="lg:hidden fixed top-0 left-0 right-0 bg-white shadow-md p-4 flex justify-between items-center z-40">
+            <h1 class="text-lg font-bold text-blue-700">Redimindo a Psicologia</h1>
+            <button id="mobile-menu-button" class="text-blue-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </header>
+
+        <!-- Container Principal com Menus Laterais e Conteúdo -->
+        <div class="flex-grow flex container mx-auto w-full">
+            <!-- Menu Lateral Esquerdo (Desktop) -->
+            <aside id="desktop-menu-left" class="hidden lg:block w-64 bg-white shadow-2xl p-4 sticky top-0 h-screen overflow-y-auto">
+                <h2 class="text-xl font-bold text-blue-700 text-center mb-4">Parte I</h2>
+                <div class="space-y-2">
+                    <button data-target="prefacio" class="menu-button w-full text-left p-3 rounded-lg transition duration-300 text-sm font-semibold bg-blue-100 text-blue-800">📖 Introdução</button>
+                    <button data-target="cap1" class="menu-button w-full text-left p-3 rounded-lg transition duration-300 text-sm font-semibold bg-blue-100 text-blue-800">📜 Sola Scriptura</button>
+                    <button data-target="cap2" class="menu-button w-full text-left p-3 rounded-lg transition duration-300 text-sm font-semibold bg-blue-100 text-blue-800">👥 Imago Dei e Corrupção</button>
+                    <button data-target="cap3" class="menu-button w-full text-left p-3 rounded-lg transition duration-300 text-sm font-semibold bg-blue-100 text-blue-800">🌍 Graça Comum</button>
+                    <button data-target="cap4" class="menu-button w-full text-left p-3 rounded-lg transition duration-300 text-sm font-semibold bg-blue-100 text-blue-800">⚔️ Cosmovisões em Conflito</button>
+                    <button data-target="cap5" class="menu-button w-full text-left p-3 rounded-lg transition duration-300 text-sm font-semibold bg-blue-100 text-blue-800">🧠 Psicanálise</button>
+                    <button data-target="cap6" class="menu-button w-full text-left p-3 rounded-lg transition duration-300 text-sm font-semibold bg-blue-100 text-blue-800">🤖 Behaviorismo</button>
+                    <button data-target="cap7" class="menu-button w-full text-left p-3 rounded-lg transition duration-300 text-sm font-semibold bg-blue-100 text-blue-800">👑 Psicologia Humanista</button>
+                </div>
+            </aside>
+
+            <!-- Conteúdo Principal -->
+            <main id="main-content" class="flex-1 p-6 lg:p-10 lg:pt-8 pt-20 overflow-y-auto">
+                <!-- As seções de conteúdo permanecem as mesmas -->
+                 <!-- Seção do Prefácio -->
+                <section id="prefacio" class="content-section space-y-6">
+                    <h2 class="text-4xl font-bold text-blue-800 border-b-4 border-yellow-400 pb-2">📖 A Excelência do Cuidado de Almas na Tradição Reformada</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-lg space-y-4 text-lg leading-relaxed">
+                        <p>A tarefa de cuidar das almas é, porventura, a mais nobre e pesada vocação confiada à Igreja de nosso Senhor Jesus Cristo. Em eras passadas, esta obra era compreendida como o cerne do ministério pastoral. Os gigantes da fé reformada, e em particular os puritanos, eram conhecidos não apenas como pregadores da Palavra, mas como verdadeiros "médicos de almas". Com uma profundidade teológica que sondava os abismos do coração humano e uma sensibilidade pastoral que aplicava o bálsamo do Evangelho com precisão cirúrgica, eles se dedicaram a compreender as complexas aflições e os enganosos labirintos do pecado.</p>
+                        <p>Contudo, nas últimas gerações, a Igreja parece ter sofrido de uma amnésia coletiva. A rica herança do cuidado de almas, forjada na bigorna da Escritura e temperada no fogo da experiência pastoral, foi em grande medida esquecida. Em seu lugar, surgiu um vácuo, prontamente preenchido pela ascensão meteórica da psicologia secular. Esta disciplina, uma recém-chegada no palco da história, apresentou-se com ares de ciência infalível, prometendo decifrar os enigmas da alma que a Igreja, supostamente, já não sabia como tratar.</p>
+                        <p class="border-l-4 border-green-500 pl-4 bg-green-50 rounded-r-lg p-4">O propósito deste estudo, portanto, não é o de condenar em bloco a psicologia, nem o de abraçá-la ingenuamente, mas o de empreender a tarefa régia de <strong class="text-green-700">redimi-la para a glória de Deus</strong>. Não buscamos abandonar este campo de estudo, mas reivindicá-lo para o Senhorio de Cristo, submetendo suas observações ao crivo da Escritura e reconfigurando-as dentro da única cosmovisão que pode dar-lhes sentido verdadeiro e eterno.</p>
+                    </div>
+                </section>
+                <!-- Demais seções de conteúdo aqui... -->
+                <section id="cap1" class="content-section space-y-6 hidden">
+                    <h2 class="text-4xl font-bold text-blue-800 border-b-4 border-yellow-400 pb-2">📜 Capítulo 1: Sola Scriptura – A Lente Infalível para a Compreensão da Alma</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-lg space-y-4 text-lg leading-relaxed">
+                        <p>O grande brado da Reforma, <strong class="text-blue-700">Sola Scriptura</strong>, deve ser o ponto de partida e o princípio governante de toda a nossa investigação. A doutrina da Suficiência das Escrituras é o fundamento epistemológico sobre o qual se ergue qualquer abordagem genuinamente cristã do cuidado de almas.</p>
+                        <p>Isto não significa <em class="italic">Nuda Scriptura</em> — a Bíblia por si só, despida de qualquer auxílio. Pelo contrário, significa que a Escritura, e somente a Escritura, é a autoridade final, inerrante e infalível em tudo o que ensina. Toda a tradição, toda a razão e toda a experiência, incluindo as observações da psicologia, devem ser testadas à luz da Palavra de Deus.</p>
+                        <blockquote class="border-l-4 border-yellow-500 pl-4 bg-yellow-50 rounded-r-lg p-4 italic">
+                            "A batalha pela alma do aconselhamento é, em sua essência, uma batalha epistemológica. A questão crucial não é se a psicologia pode fazer observações factualmente corretas sobre o comportamento humano. A questão é: qual sistema de verdade possui a autoridade final para interpretar o significado dessas observações?"
+                        </blockquote>
+                        <p>O erro fundamental do integracionismo é tratar a Escritura e a psicologia como duas fontes de autoridade paralelas. Uma abordagem reformada consistente insiste que a Escritura não é meramente um compêndio de "fatos religiosos", mas a própria <strong class="text-green-700">"lente da verdade"</strong>, a cosmovisão divinamente revelada pela qual Deus corrige nossa visão e nos capacita a reinterpretar e redimir os "fatos" do mundo.</p>
+                    </div>
+                </section>
+                <section id="cap2" class="content-section space-y-6 hidden">
+                    <h2 class="text-4xl font-bold text-blue-800 border-b-4 border-yellow-400 pb-2">👥 Capítulo 2: A Glória e a Ruína do Homem – Imago Dei e a Corrupção Radical</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-lg space-y-4 text-lg leading-relaxed">
+                        <p>A antropologia bíblica nos apresenta um paradoxo sublime: o homem é, ao mesmo tempo, a glória e a ruína da criação.</p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                <h3 class="text-2xl font-bold text-blue-700 mb-2">✨ A Glória: Imago Dei</h3>
+                                <p>O homem foi criado à imagem e semelhança de Deus, dotado de racionalidade, moralidade, criatividade e a capacidade de se relacionar com seu Criador. Esta imagem, embora desfigurada pela Queda, não foi aniquilada. É por causa desta imagem retida que o homem, mesmo caído, possui dignidade inerente.</p>
+                            </div>
+                            <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                                <h3 class="text-2xl font-bold text-red-700 mb-2">🔥 A Ruína: Corrupção Radical</h3>
+                                <p>A Queda mergulhou a raça humana na Depravação Total. O pecado afetou a totalidade da pessoa: a mente se obscureceu, as emoções se desordenaram, a vontade se tornou escrava. Não somos pecadores porque pecamos; pecamos porque somos, por natureza, pecadores.</p>
+                            </div>
+                        </div>
+                        <p>Esta tensão teológica é a chave para uma antropologia bíblica equilibrada e a crítica fundamental às psicologias seculares, que invariavelmente se fixam em um dos polos. A visão bíblica mantém ambos os aspectos em tensão: <strong class="text-green-700">o homem é uma criatura gloriosa em ruínas</strong>.</p>
+                    </div>
+                </section>
+                <section id="cap3" class="content-section space-y-6 hidden">
+                    <h2 class="text-4xl font-bold text-blue-800 border-b-4 border-yellow-400 pb-2">🌍 Capítulo 3: A Graça Comum de Deus – Discernindo a Verdade em um Mundo Caído</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-lg space-y-4 text-lg leading-relaxed">
+                         <p>Se a Escritura é nossa autoridade final e o homem é radicalmente corrupto, como podemos nos engajar com a psicologia? A resposta reside na doutrina da <strong class="text-blue-700">Graça Comum</strong>. Deus, em Sua bondade, estende bênçãos e restringe o mal no mundo todo, concedendo dons, talentos e insights a toda a humanidade, crentes e incrédulos.</p>
+                        <p>Isto significa que um psicólogo não-cristão, operando sob a graça comum, pode fazer observações precisas e úteis. Rejeitar em bloco a psicologia secular seria desprezar os dons de Deus. A tarefa do cristão é a de um engajamento crítico, de <strong class="text-green-700">"saquear os egípcios"</strong>: tomar o ouro da verdade onde quer que ele seja encontrado e reconsagrá-lo ao serviço do Deus verdadeiro.</p>
+                        <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg">
+                            <h4 class="font-bold text-yellow-800">Exemplo Prático: TCC e a Bíblia</h4>
+                            <p>Aaron Beck (TCC) observou que deprimidos têm "pensamentos automáticos negativos" (Graça Comum). A Escritura aprofunda: esses pensamentos são "frutos" que revelam as "raízes" idólatras do coração (Graça Especial). A solução não é só reestruturar o pensamento, mas o arrependimento que transforma o coração.</p>
+                        </div>
+                        <p>A graça comum nos permite aprender com o mundo, enquanto a Sola Scriptura nos impede de sermos moldados por ele.</p>
+                    </div>
+                </section>
+                <section id="cap4" class="content-section space-y-6 hidden">
+                    <h2 class="text-4xl font-bold text-blue-800 border-b-4 border-yellow-400 pb-2">⚔️ Capítulo 4: As Cosmovisões em Conflito</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-lg space-y-4 text-lg leading-relaxed">
+                        <p>Toda teoria psicológica é inerentemente "religiosa", baseada em pressupostos de cosmovisão. O conflito não é entre "fé" e "ciência", mas entre <strong class="text-blue-700">duas fés</strong>, duas narrativas que buscam explicar a condição humana. Cada escola oferece seu próprio evangelho secular:</p>
+                        <div class="space-y-4">
+                            <div class="p-4 rounded-lg bg-blue-50 border border-blue-200">
+                                <p><strong class="text-blue-800">🧠 Psicanálise:</strong> Somos seres movidos por pulsões; nosso problema é a repressão; nossa salvação está na autoconsciência.</p>
+                            </div>
+                            <div class="p-4 rounded-lg bg-yellow-50 border border-yellow-200">
+                                <p><strong class="text-yellow-800">🤖 Behaviorismo:</strong> Somos organismos que respondem a estímulos; nosso problema é o condicionamento inadequado; nossa salvação está no recondicionamento.</p>
+                            </div>
+                            <div class="p-4 rounded-lg bg-green-50 border border-green-200">
+                                <p><strong class="text-green-800">👑 Psicologia Humanista:</strong> Somos inerentemente bons; nosso problema são as barreiras sociais; nossa salvação está na auto-realização.</p>
+                            </div>
+                            <div class="p-4 rounded-lg bg-red-50 border border-red-200">
+                                <p><strong class="text-red-800">✝️ Cristianismo Bíblico:</strong> Somos criaturas caídas em rebelião; nosso problema é o pecado; nossa salvação está na graça de Deus através de Cristo.</p>
+                            </div>
+                        </div>
+                        <p>A tarefa do cristão não é de fusão, mas de <strong class="text-green-700">confronto crítico e reinterpretação soberana</strong>.</p>
+                    </div>
+                </section>
+                <section id="cap5" class="content-section space-y-6 hidden">
+                    <h2 class="text-4xl font-bold text-blue-800 border-b-4 border-yellow-400 pb-2">🧠 Capítulo 5: A Psicanálise e a Negação da Responsabilidade Moral</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-lg space-y-4 text-lg leading-relaxed">
+                        <p>A psicanálise de Freud, baseada no naturalismo ateísta e determinismo psíquico, é teologicamente problemática. Para Freud, o homem é um mecanismo movido por pulsões inconscientes, e a religião é uma neurose obsessiva.</p>
+                        <blockquote class="border-l-4 border-red-500 pl-4 bg-red-50 rounded-r-lg p-4 italic">
+                            "A crítica teológica mais devastadora à psicanálise é a sua completa aniquilação do conceito bíblico de pecado e responsabilidade moral."
+                        </blockquote>
+                        <p>O que a Bíblia chama de <strong class="text-red-700">pecado</strong>, a psicanálise redefine como <strong class="text-blue-700">patologia</strong>. A culpa não é um veredito justo, mas um sintoma neurótico. A solução não é o arrependimento e o perdão, mas a introspecção analítica.</p>
+                        <p>Ao fazer isso, a psicanálise remove a agência e a responsabilidade do indivíduo, localizando o problema não no coração rebelde, mas em forças determinísticas. É um sistema que oferece <strong class="text-yellow-600">explicação sem expiação</strong>, e autoconhecimento sem redenção.</p>
+                    </div>
+                </section>
+                <section id="cap6" class="content-section space-y-6 hidden">
+                    <h2 class="text-4xl font-bold text-blue-800 border-b-4 border-yellow-400 pb-2">🤖 Capítulo 6: O Behaviorismo e a Negação da Alma</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-lg space-y-4 text-lg leading-relaxed">
+                        <p>O behaviorismo radical de B. F. Skinner, baseado no materialismo e determinismo ambiental, vai além e nega a própria existência da alma. O homem é um organismo cujo comportamento é inteiramente moldado por seu ambiente através de reforço e punição.</p>
+                        <p>Conceitos como mente, consciência, vontade e alma são considerados ficções. O homem não age; ele é agido sobre. A crítica teológica é profunda: o behaviorismo <strong class="text-red-700">reduz o portador da imagem de Deus a um autômato biológico</strong>.</p>
+                        <p>Toda a vida interior, que é o foco central da Escritura (o coração, a adoração, a idolatria), é simplesmente ignorada ou negada. O pecado torna-se um "comportamento mal-adaptativo". A solução não é a regeneração do coração, mas o "recondicionamento" ambiental. O behaviorismo não oferece um caminho para redimir a alma, pois <strong class="text-yellow-600">não acredita que exista uma alma a ser redimida</strong>.</p>
+                    </div>
+                </section>
+                <section id="cap7" class="content-section space-y-6 hidden">
+                    <h2 class="text-4xl font-bold text-blue-800 border-b-4 border-yellow-400 pb-2">👑 Capítulo 7: A Psicologia Humanista e a Deificação do Homem</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-lg space-y-4 text-lg leading-relaxed">
+                        <p>A psicologia humanista (Rogers, Maslow) propõe uma visão do homem como um ser inerentemente bom, livre e com um impulso inato para a "auto-realização". O problema não vem de dentro, mas de fatores externos que frustram seu potencial.</p>
+                        <blockquote class="border-l-4 border-green-500 pl-4 bg-green-50 rounded-r-lg p-4 italic">
+                            "De todas as psicologias seculares, a humanista é talvez a mais explicitamente idólatra. Ela ecoa a mentira original da serpente no Jardim: 'sereis como Deus'."
+                        </blockquote>
+                        <p>Ela toma o "eu" e o coloca no trono do universo. A busca pela <strong class="text-yellow-600">"auto-realização"</strong> é uma busca pela glória divorciada de Deus. O problema fundamental não é o pecado (ofensa contra Deus), mas a frustração (ofensa contra o eu).</p>
+                        <p>A cura não vem do arrependimento e da fé em um Redentor externo, mas da remoção de barreiras para que o "eu" divino possa se expressar. É uma religião rival que promove a <strong class="text-red-700">adoração da criatura em vez do Criador</strong>.</p>
+                    </div>
+                </section>
+                <section id="cap8" class="content-section space-y-6 hidden">
+                    <h2 class="text-4xl font-bold text-blue-800 border-b-4 border-yellow-400 pb-2">🗣️ Capítulo 8: A Terapia Cognitivo-Comportamental e a Superficialidade do Coração</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-lg space-y-4 text-lg leading-relaxed">
+                        <p>A Terapia Cognitivo-Comportamental (TCC) de Aaron Beck é pragmática e eficaz em tratar transtornos como ansiedade e depressão. Seu princípio é que nossas cognições (pensamentos) mediam nossas emoções e comportamentos. A solução está em modificar "pensamentos disfuncionais".</p>
+                        <p>Do ponto de vista bíblico, a TCC oferece ferramentas úteis, alinhando-se com o chamado para "levar cativo todo pensamento" (2 Co 10:5). No entanto, a crítica teológica fundamental é sua <strong class="text-red-700">inerente superficialidade</strong>.</p>
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                            <h4 class="font-bold text-blue-800">Frutos vs. Raiz</h4>
+                            <p>A TCC opera no nível dos <strong class="text-yellow-700">"frutos"</strong> (pensamentos, comportamentos) sem tratar adequadamente da <strong class="text-green-700">"raiz"</strong> (o coração, a idolatria subjacente). Ela oferece técnicas para a mudança da mente, mas carece do poder do Evangelho para a transformação do coração.</p>
+                        </div>
+                        <p>Por isso, suas técnicas são as mais "saqueáveis" para o aconselhamento bíblico. Um conselheiro bíblico pode usar uma técnica da TCC, como um diário de pensamentos, mas para guiar o aconselhado a uma pergunta mais profunda: "O que este pensamento revela sobre o que seu coração adora?". A técnica é secular, mas o objetivo é a <strong class="text-green-700">santificação</strong>.</p>
+                    </div>
+                </section>
+                <section id="cap9" class="content-section space-y-6 hidden">
+                    <h2 class="text-4xl font-bold text-blue-800 border-b-4 border-yellow-400 pb-2">✝️ Capítulo 9: O Aconselhamento Bíblico – A Aplicação da Palavra ao Coração</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-lg space-y-4 text-lg leading-relaxed">
+                        <p>O Aconselhamento Bíblico é a redescoberta da prática de aplicar pessoal e compassivamente a Palavra de Deus aos problemas da vida. É o <strong class="text-blue-700">ministério da Palavra feito face a face</strong>. Seu fundamento é a suficiência da Palavra.</p>
+                        <p>Duas correntes principais são identificadas:</p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                                <h3 class="text-xl font-bold text-green-700 mb-2">1. Aconselhamento Noutético (Jay Adams)</h3>
+                                <p>Baseado no termo grego <em>noutheteō</em> (admoestar, instruir). Pilares: confronto amoroso com a Escritura, preocupação genuína e busca pela mudança para a glória de Deus.</p>
+                            </div>
+                            <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                                <h3 class="text-xl font-bold text-yellow-700 mb-2">2. Abordagem CCEF (David Powlison)</h3>
+                                <p>Maior ênfase na dinâmica do coração, na centralidade do evangelho, na sensibilidade ao sofrimento e na importância do corpo de Cristo. Busca "restaurar o aconselhamento à igreja".</p>
+                            </div>
+                        </div>
+                        <p>Ambas as correntes concordam que o aconselhamento bíblico é um ministério de todos os crentes. O alvo final não é a resolução de problemas, mas a <strong class="text-green-700">santificação progressiva</strong> e a glória de Deus.</p>
+                    </div>
+                </section>
+                <section id="cap10" class="content-section space-y-6 hidden">
+                    <h2 class="text-4xl font-bold text-blue-800 border-b-4 border-yellow-400 pb-2">🤝 Capítulo 10: O Pastor e o Psicólogo – Colaboração e Encaminhamento</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-lg space-y-4 text-lg leading-relaxed">
+                        <p>Afirmar a suficiência das Escrituras não significa que o pastor é um especialista em tudo. A sabedoria pastoral exige humildade. Haverá situações em que o sofrimento tem um componente orgânico ou fisiológico tão significativo que a intervenção de um médico ou psiquiatra é necessária e um ato de amor.</p>
+                        <p class="font-bold text-red-700">O encaminhamento para uma avaliação médica não é um sinal de fracasso pastoral, mas um reconhecimento da realidade de que vivemos em corpos caídos.</p>
+                        <p>Contudo, o cuidado pastoral nunca cessa. Mesmo sob cuidados médicos, o pastor continua a ministrar a Palavra, ajudando a alma a lutar contra o desespero e a encontrar sentido no sofrimento.</p>
+                        <div class="overflow-x-auto mt-6">
+                            <h3 class="text-2xl font-bold text-blue-700 mb-4">Tabela 1: Critérios para Discernimento Pastoral</h3>
+                            <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                                <thead class="bg-blue-100">
+                                    <tr>
+                                        <th class="p-3 text-left font-semibold text-blue-800">Categoria</th>
+                                        <th class="p-3 text-left font-semibold text-green-800">Indicadores de Componente Orgânico</th>
+                                        <th class="p-3 text-left font-semibold text-yellow-800">Indicadores de Componente Espiritual/Moral</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b">
+                                        <td class="p-3 font-bold">Gatilho/Origem</td>
+                                        <td class="p-3">Início súbito sem gatilho claro, histórico familiar.</td>
+                                        <td class="p-3">Ligado a eventos da vida, conflitos, pecado.</td>
+                                    </tr>
+                                    <tr class="border-b bg-blue-50">
+                                        <td class="p-3 font-bold">Natureza dos Sintomas</td>
+                                        <td class="p-3">Sintomas psicóticos (alucinações, delírios), mudanças de humor extremas.</td>
+                                        <td class="p-3">Padrões de culpa, amargura, medo, inveja, orgulho.</td>
+                                    </tr>
+                                    <tr class="border-b">
+                                        <td class="p-3 font-bold">Funcionamento Físico</td>
+                                        <td class="p-3">Alterações drásticas e persistentes no sono, apetite, energia.</td>
+                                        <td class="p-3">Fadiga ligada ao estresse emocional, convicção de pecado.</td>
+                                    </tr>
+                                    <tr class="border-b bg-blue-50">
+                                        <td class="p-3 font-bold">Resposta à Intervenção Espiritual</td>
+                                        <td class="p-3">Pouca ou nenhuma resposta ao aconselhamento, oração, arrependimento.</td>
+                                        <td class="p-3">Resposta positiva ao ensino, arrependimento, reconciliação.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-bold">Ação Pastoral Recomendada</td>
+                                        <td class="p-3 text-red-600 font-semibold">Aconselhamento pastoral + Urgente recomendação de avaliação médica.</td>
+                                        <td class="p-3 text-green-600 font-semibold">Aconselhamento pastoral focado no coração.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <section id="cap11" class="content-section space-y-6 hidden">
+                    <h2 class="text-4xl font-bold text-blue-800 border-b-4 border-yellow-400 pb-2">🧭 Capítulo 11: A Vocação do Psicólogo Cristão – Um Ministério em Território Missionário</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-lg space-y-4 text-lg leading-relaxed">
+                        <p>E quanto ao cristão vocacionado para a profissão de psicólogo? Esta é uma vocação nobre, mas que deve ser entendida como um chamado para servir como <strong class="text-blue-700">missionário em um campo estrangeiro</strong>, muitas vezes hostil à fé.</p>
+                        <p>Sua tarefa não é a de uma "integração" simplista, mas de <strong class="text-green-700">tradução e encarnação</strong>. Ele deve:</p>
+                        <ul class="list-disc list-inside space-y-2 pl-4">
+                            <li><strong class="text-green-800">Traduzir:</strong> Converter a linguagem da psicologia (e.g., "transtorno de ansiedade") para uma compreensão bíblica mais profunda (e.g., ansiedade como fruto da incredulidade).</li>
+                            <li><strong class="text-yellow-800">Encarnar:</strong> Demonstrar a compaixão, a sabedoria e a graça de Cristo em seu relacionamento terapêutico, usando as ferramentas da graça comum para aliviar o sofrimento.</li>
+                        </ul>
+                        <blockquote class="border-l-4 border-yellow-500 pl-4 bg-yellow-50 rounded-r-lg p-4 italic">
+                            "Ele deve ser mais do que um técnico; deve ser um teólogo prático. Ele deve entender que sua vocação o coloca em um ponto de intersecção crucial entre as ideias do mundo e a verdade de Deus."
+                        </blockquote>
+                        <p>O psicólogo cristão tem a responsabilidade de navegar nesse espaço com fidelidade e discernimento, para o bem de seus clientes e para a glória de Deus.</p>
+                    </div>
+                </section>
+                <section id="cap12" class="content-section space-y-6 hidden">
+                    <h2 class="text-4xl font-bold text-blue-800 border-b-4 border-yellow-400 pb-2">❓ Capítulo 12: Respondendo às Questões Cruciais para a Igreja</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-lg space-y-6 text-lg leading-relaxed">
+                        <div class="space-y-4">
+                            <details class="bg-blue-50 p-4 rounded-lg cursor-pointer">
+                                <summary class="font-bold text-blue-800">1. Um cristão precisa ir a um psicólogo?</summary>
+                                <p class="mt-2 text-gray-700">Às vezes, sim. Em casos com complexidades orgânicas, fisiológicas ou traumáticas que excedem o cuidado pastoral, buscar ajuda profissional (preferencialmente de um cristão) é um ato de sabedoria.</p>
+                            </details>
+                            <details class="bg-green-50 p-4 rounded-lg cursor-pointer">
+                                <summary class="font-bold text-green-800">2. Um cristão deve se tornar um psicólogo?</summary>
+                                <p class="mt-2 text-gray-700">Sim, se for vocacionado por Deus. Deve ser visto como um chamado missionário para ser sal e luz, exigindo fé robusta e conhecimento teológico.</p>
+                            </details>
+                            <details class="bg-yellow-50 p-4 rounded-lg cursor-pointer">
+                                <summary class="font-bold text-yellow-800">3. Como um psicólogo convertido deve se posicionar?</summary>
+                                <p class="mt-2 text-gray-700">Como um missionário. Deve ser profissionalmente competente, usando as ferramentas da graça comum, mas mantendo uma cosmovisão bíblica inabalável, interpretando os problemas através das lentes da Escritura.</p>
+                            </details>
+                            <details class="bg-blue-50 p-4 rounded-lg cursor-pointer">
+                                <summary class="font-bold text-blue-800">4. Como o pastor deve se posicionar em relação à psicologia?</summary>
+                                <p class="mt-2 text-gray-700">Com discernimento crítico: rejeitando as cosmovisões antibíblicas, mas disposto a aprender com suas observações (graça comum) e colaborar humildemente com profissionais da saúde quando necessário.</p>
+                            </details>
+                            <details class="bg-green-50 p-4 rounded-lg cursor-pointer">
+                                <summary class="font-bold text-green-800">5. Qual o limite entre aconselhamento pastoral e encaminhamento?</summary>
+                                <p class="mt-2 text-gray-700">O limite é definido pela sabedoria e competência. O encaminhamento é prudente quando há suspeitas de componentes orgânicos significativos (conforme Tabela 1) ou complexidade que excede a capacidade do pastor.</p>
+                            </details>
+                            <details class="bg-yellow-50 p-4 rounded-lg cursor-pointer">
+                                <summary class="font-bold text-yellow-800">6. Como redimir a psicologia?</summary>
+                                <p class="mt-2 text-gray-700">Não por "integrá-la", mas por submetê-la ao senhorio de Cristo. "Saqueando" suas observações verdadeiras (graça comum), rejeitando suas falsas antropologias e "traduzindo" seus insights para a estrutura da Criação, Queda e Redenção.</p>
+                            </details>
+                        </div>
+                    </div>
+                </section>
+                <section id="conclusao" class="content-section space-y-6 hidden">
+                    <h2 class="text-4xl font-bold text-blue-800 border-b-4 border-yellow-400 pb-2">✨ Conclusão: Rumo a uma Psicologia Verdadeiramente Redimida</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-lg space-y-4 text-lg leading-relaxed">
+                        <p>A psicologia moderna não é um inimigo a ser temido, nem um salvador a ser abraçado. É um campo a ser <strong class="text-green-700">redimido sob o senhorio de Cristo</strong>.</p>
+                        <p>O modelo para esta redenção não é o do sincretismo, mas o da <strong class="text-blue-700">reinterpretação soberana</strong>, vendo o mundo com os "olhos da Escritura". É a tarefa de traduzir tudo de volta para a linguagem da Palavra de Deus.</p>
+                        <p>Uma psicologia verdadeiramente redimida começa e termina com Deus. Ela reconhece o homem como corpo e alma, imagem de Deus. Ela compreende os problemas na rica linguagem bíblica do pecado e do sofrimento. E aponta para a única solução: a redenção em Jesus Cristo.</p>
+                        <blockquote class="border-l-4 border-yellow-500 pl-4 bg-yellow-50 rounded-r-lg p-4 italic font-bold text-center text-xl">
+                            "Que possamos nos levantar para esta tarefa, com a Escritura em nossas mãos e a oração em nossos lábios, para que em todas as coisas — até mesmo na redenção da psicologia — somente a Deus seja a glória. Amém."
+                        </blockquote>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg space-y-4">
+                        <h3 class="text-3xl font-bold text-blue-800">🔗 Referências Comentadas</h3>
+                        <p class="text-gray-600">Abaixo estão as fontes citadas no estudo, com links para aprofundamento. Elas representam um rico acervo de teologia reformada, aconselhamento bíblico e análise crítica da psicologia.</p>
+                        <ul id="references-list" class="space-y-2 list-decimal list-inside">
+                            <!-- As referências serão inseridas aqui pelo JS -->
+                        </ul>
+                    </div>
+                </section>
+                <section id="flashcards" class="content-section space-y-6 hidden">
+                    <h2 class="text-4xl font-bold text-yellow-800 border-b-4 border-green-400 pb-2">🗂️ Flashcards: Revise os Conceitos</h2>
+                    <div class="flex flex-col items-center space-y-6">
+                        <div id="flashcard-container" class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front">
+                                    <p id="flashcard-question" class="text-2xl font-bold"></p>
+                                </div>
+                                <div class="flip-card-back">
+                                    <p id="flashcard-answer" class="text-xl"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center text-gray-500 text-sm">Clique no card para virar</div>
+                        <div class="flex space-x-4">
+                            <button id="prev-flashcard" class="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:bg-blue-600 transition">Anterior</button>
+                            <button id="next-flashcard" class="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:bg-blue-600 transition">Próximo</button>
+                        </div>
+                        <div id="flashcard-counter" class="font-semibold text-gray-600"></div>
+                    </div>
+                </section>
+                <section id="quiz" class="content-section space-y-6 hidden">
+                    <h2 class="text-4xl font-bold text-green-800 border-b-4 border-yellow-400 pb-2">🎯 Quiz: Teste seu Conhecimento</h2>
+                    <div id="quiz-container" class="bg-white p-6 rounded-xl shadow-lg max-w-2xl mx-auto">
+                        <div id="quiz-question-area">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-semibold text-blue-800">Questão <span id="question-number"></span> de <span id="total-questions"></span></h3>
+                                <div class="text-lg font-bold text-green-700">Pontos: <span id="quiz-score">0</span></div>
+                            </div>
+                            <p id="quiz-question" class="text-2xl font-semibold mb-6"></p>
+                            <div id="quiz-options" class="space-y-3">
+                                <!-- Opções do quiz serão inseridas aqui -->
+                            </div>
+                            <div id="quiz-feedback" class="mt-6 p-3 rounded-lg text-center font-semibold hidden"></div>
+                        </div>
+                        <div id="quiz-results-area" class="hidden text-center">
+                            <h3 class="text-3xl font-bold text-blue-800 mb-4">Quiz Finalizado!</h3>
+                            <p class="text-xl mb-2">Sua pontuação final é:</p>
+                            <p class="text-6xl font-bold text-green-600 mb-8"><span id="final-score"></span> / <span id="total-score"></span></p>
+                            <p id="score-message" class="text-lg mb-6 font-semibold"></p>
+                            <button id="restart-quiz" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-blue-700 transition">Tentar Novamente</button>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <!-- Menu Lateral Direito (Desktop) -->
+            <aside id="desktop-menu-right" class="hidden lg:block w-64 bg-white shadow-2xl p-4 sticky top-0 h-screen overflow-y-auto">
+                <h2 class="text-xl font-bold text-blue-700 text-center mb-4">Parte II e Extras</h2>
+                 <div class="space-y-2">
+                    <button data-target="cap8" class="menu-button w-full text-left p-3 rounded-lg transition duration-300 text-sm font-semibold bg-blue-100 text-blue-800">🗣️ TCC e o Coração</button>
+                    <button data-target="cap9" class="menu-button w-full text-left p-3 rounded-lg transition duration-300 text-sm font-semibold bg-blue-100 text-blue-800">✝️ Aconselhamento Bíblico</button>
+                    <button data-target="cap10" class="menu-button w-full text-left p-3 rounded-lg transition duration-300 text-sm font-semibold bg-blue-100 text-blue-800">🤝 Pastor e Psicólogo</button>
+                    <button data-target="cap11" class="menu-button w-full text-left p-3 rounded-lg transition duration-300 text-sm font-semibold bg-blue-100 text-blue-800">🧭 Vocação do Psicólogo</bitton>
+                    <button data-target="cap12" class="menu-button w-full text-left p-3 rounded-lg transition duration-300 text-sm font-semibold bg-blue-100 text-blue-800">❓ Questões Cruciais</button>
+                    <button data-target="conclusao" class="menu-button w-full text-left p-3 rounded-lg transition duration-300 font-semibold bg-blue-200 text-blue-900">✨ Conclusão</button>
+                    <button data-target="flashcards" class="menu-button w-full text-left p-3 rounded-lg transition duration-300 font-semibold bg-yellow-200 text-yellow-800">🗂️ Flashcards</button>
+                    <button data-target="quiz" class="menu-button w-full text-left p-3 rounded-lg transition duration-300 font-semibold bg-green-200 text-green-800">🎯 Quiz</button>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Rodapé -->
+        <footer class="bg-white text-center p-4 text-sm text-gray-600 shadow-inner mt-auto">
+            Desenvolvido por Rodrigo Niskier e Gemini
+        </footer>
+
+        <!-- Menu Mobile (Oculto por padrão) -->
+        <div id="mobile-menu-container" class="lg:hidden fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-40 transform -translate-x-full">
+            <aside class="w-80 bg-white shadow-2xl p-6 space-y-4 h-full overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-blue-700">Menu</h2>
+                    <button id="close-mobile-menu-button" class="text-gray-600 text-3xl">&times;</button>
+                </div>
+                <!-- Conteúdo do menu mobile combinado -->
+                <div id="mobile-menu-content" class="space-y-2"></div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- DADOS ---
+            const flashcardsData = [
+                { q: "Sola Scriptura", a: "A doutrina da Suficiência das Escrituras como autoridade final, inerrante e infalível em tudo o que ensina." },
+                { q: "Imago Dei", a: "O conceito de que o homem foi criado à imagem e semelhança de Deus, dotado de dignidade e capacidades únicas." },
+                { q: "Corrupção Radical", a: "Também conhecida como Depravação Total, ensina que o pecado afetou a totalidade da pessoa humana (mente, emoções, vontade)." },
+                { q: "Graça Comum", a: "A doutrina de que Deus estende bênçãos, dons e restrição ao mal a toda a humanidade, não apenas aos eleitos." },
+                { q: "Saquear os Egípcios", a: "Metáfora para a prática de tomar as verdades observadas na cultura secular (frutos da graça comum) e reconsagrá-las ao serviço de Deus dentro de uma cosmovisão bíblica." },
+                { q: "Cosmovisão", a: "Um conjunto de pressupostos fundamentais sobre a realidade que molda como interpretamos o mundo. Toda psicologia tem uma." },
+                { q: "Crítica à Psicanálise", a: "Aniquila o conceito de pecado e responsabilidade moral, redefinindo-os como patologia e conflitos inconscientes." },
+                { q: "Crítica ao Behaviorismo", a: "Nega a existência da alma e da vida interior, reduzindo o homem a um organismo determinado pelo ambiente." },
+                { q: "Crítica à Psicologia Humanista", a: "É explicitamente idólatra, deificando o 'eu' e promovendo a auto-realização como salvação, adorando a criatura em vez do Criador." },
+                { q: "Crítica à TCC", a: "Sua superficialidade, pois trata dos 'frutos' (pensamentos) sem lidar com a 'raiz' (o coração e a idolatria)." },
+                { q: "Aconselhamento Noutético", a: "Abordagem de Jay Adams baseada no confronto amoroso com a Escritura, preocupação genuína e busca pela mudança para a glória de Deus." },
+                { q: "Abordagem CCEF", a: "Desenvolvida por David Powlison, foca na dinâmica do coração, na centralidade do evangelho e em restaurar o aconselhamento à igreja." },
+                { q: "Erro 'Espiritualizante'", a: "Tratar uma condição médica como um simples problema de falta de fé, causando culpa indevida." },
+                { q: "Erro 'Medicalizante'", a: "Tratar um claro problema de pecado (como amargura) como se fosse apenas uma doença, negligenciando o arrependimento." },
+                { q: "Vocação do Psicólogo Cristão", a: "Servir como um 'missionário em campo estrangeiro', usando a 'tradução' e 'encarnação' para aplicar a verdade bíblica." },
+                { q: "Redenção da Psicologia", a: "Não é 'integração', mas 'reinterpretação soberana', submetendo todas as observações à autoridade da Escritura." },
+                { q: "Autoridade Funcional vs. Designadora", a: "A 'designadora' usa a Bíblia como verniz, enquanto a 'funcional' (a psicologia secular) é a que realmente molda a prática." },
+            ];
+
+            const quizData = [
+                { q: "Qual é o princípio fundamental da 'Sola Scriptura' no contexto do aconselhamento?", a: "A Escritura é a autoridade final e suficiente para todos os problemas não-físicos da alma.", o: ["A Bíblia é a única fonte de conhecimento.", "A Escritura é a autoridade final e suficiente para todos os problemas não-físicos da alma.", "Devemos ignorar a psicologia.", "A tradição da igreja é superior à Bíblia."] },
+                { q: "A doutrina da 'Imago Dei' ensina que:", a: "O homem, mesmo caído, retém uma dignidade inerente por ser criado à imagem de Deus.", o: ["O homem perdeu completamente a imagem de Deus na Queda.", "O homem é inerentemente bom e divino.", "O homem, mesmo caído, retém uma dignidade inerente por ser criado à imagem de Deus.", "A imagem de Deus só é restaurada após a morte."] },
+                { q: "O que a 'Graça Comum' permite a um cristão fazer em relação à psicologia secular?", a: "Aprender com suas observações precisas, filtrando-as pela Escritura.", o: ["Rejeitá-la completamente.", "Integrá-la como uma autoridade igual à Bíblia.", "Aprender com suas observações precisas, filtrando-as pela Escritura.", "Adotar suas teorias sem críticas."] },
+                { q: "Segundo o texto, qual é o erro fundamental do 'integracionismo'?", a: "Tratar a Escritura e a psicologia como duas fontes de autoridade paralelas e iguais.", o: ["Ser muito focado na Bíblia.", "Tratar a Escritura e a psicologia como duas fontes de autoridade paralelas e iguais.", "Ignorar a graça comum.", "Ser muito pessimista sobre a natureza humana."] },
+                { q: "A principal crítica teológica à Psicanálise Freudiana é que ela:", a: "Nega a responsabilidade moral e redefine o pecado como patologia.", o: ["É muito otimista.", "Foca demais no comportamento.", "Nega a responsabilidade moral e redefine o pecado como patologia.", "É difícil de entender."] },
+                { q: "O Behaviorismo Radical de Skinner é criticado no texto por:", a: "Negar a existência da alma e da vida interior do homem.", o: ["Ser muito subjetivo.", "Negar a existência da alma e da vida interior do homem.", "Dar muita importância aos pensamentos.", "Ser uma forma de humanismo."] },
+                { q: "A Psicologia Humanista é descrita como a mais explicitamente idólatra porque:", a: "Coloca o 'eu' e a auto-realização no lugar de Deus.", o: ["É muito pessimista.", "Coloca o 'eu' e a auto-realização no lugar de Deus.", "Nega a liberdade humana.", "Baseia-se em estudos com animais."] },
+                { q: "Por que as técnicas da TCC são consideradas as mais 'saqueáveis' para o aconselhamento bíblico?", a: "Porque operam em um nível prático (pensamentos) que pode ser redirecionado para um objetivo teológico mais profundo.", o: ["Porque a TCC já é uma teoria cristã.", "Porque Aaron Beck era cristão.", "Porque operam em um nível prático (pensamentos) que pode ser redirecionado para um objetivo teológico mais profundo.", "Porque são as únicas técnicas que funcionam."] },
+                { q: "Qual o alvo final do Aconselhamento Bíblico?", a: "A santificação progressiva e a glória de Deus.", o: ["A felicidade do aconselhado.", "A resolução de todos os problemas.", "A santificação progressiva e a glória de Deus.", "A auto-realização."] },
+                { q: "Quando o encaminhamento para um profissional de saúde se torna necessário, segundo o texto?", a: "Quando há fortes suspeitas de componentes orgânicos ou fisiológicos significativos.", o: ["Sempre que um pastor se sentir cansado.", "Apenas em casos de esquizofrenia.", "Quando há fortes suspeitas de componentes orgânicos ou fisiológicos significativos.", "Nunca, pois a Bíblia é suficiente para tudo."] },
+                { q: "O erro 'medicalizante' consiste em:", a: "Tratar um problema claro de pecado como se fosse apenas uma doença.", o: ["Dar muito remédio ao paciente.", "Tratar um problema claro de pecado como se fosse apenas uma doença.", "Ignorar problemas físicos reais.", "Acreditar que toda doença é espiritual."] },
+                { q: "A vocação do psicólogo cristão é descrita como um ministério de:", a: "Tradução e encarnação.", o: ["Integração e sincretismo.", "Rejeição e isolamento.", "Tradução e encarnação.", "Condenação e julgamento."] },
+                { q: "Qual a diferença entre a Corrupção Radical e dizer que o homem é 'tão mau quanto poderia ser'?", a: "Corrupção Radical significa que o pecado afetou TODAS as partes do ser, não que cada ato é o pior possível.", o: ["Não há diferença.", "Corrupção Radical significa que o homem é 'tão mau quanto poderia ser'.", "Corrupção Radical significa que o pecado afetou TODAS as partes do ser, não que cada ato é o pior possível.", "Corrupção Radical se aplica apenas a não-crentes."] },
+                { q: "O que a Bíblia oferece que a TCC não pode?", a: "O poder do Evangelho para a transformação do coração (a raiz).", o: ["Técnicas para mudar pensamentos.", "Um diagnóstico de problemas.", "O poder do Evangelho para a transformação do coração (a raiz).", "Um relacionamento terapêutico."] },
+                { q: "Como a psicologia é 'redimida' segundo a conclusão do estudo?", a: "Pela reinterpretação soberana, submetendo-a à autoridade da Escritura.", o: ["Misturando-a com a teologia.", "Pela reinterpretação soberana, submetendo-a à autoridade da Escritura.", "Aceitando-a como uma ciência neutra.", "Rejeitando-a por completo."] },
+                { q: "Qual o paradoxo da antropologia bíblica apresentado no Capítulo 2?", a: "O homem é ao mesmo tempo a glória (Imago Dei) e a ruína (Corrupção Radical) da criação.", o: ["O homem é bom e mau ao mesmo tempo.", "O homem é corpo e alma.", "O homem é ao mesmo tempo a glória (Imago Dei) e a ruína (Corrupção Radical) da criação.", "O homem é livre mas predestinado."] },
+            ];
+
+            const referencesData = [
+                { num: 1, text: "Por que precisamos dos puritanos - Ministério Fiel", url: "https://ministeriofiel.com.br/artigos/por-que-precisamos-dos-puritanos/" },
+                { num: 2, text: "Santos no Mundo - Leland Ryken by Editora Fiel - Issuu", url: "https://issuu.com/editorafiel/docs/santos_no_mundo_-_leland_ryken" },
+                { num: 3, text: "Diferença entre o aconselhamento bíblico e a psicologia cristã - Igreja Batista Fonte", url: "https://www.igrejafonte.org.br/_fonte/conteudo/escolabiblica/1110-2aconselhamento@3-1.pdf" },
+                { num: 4, text: "Teologia para vida - v. I, nº 1 - Issuu", url: "https://issuu.com/revistateologiaparavida/docs/vd_teologia_vida_v1_n1" },
+                { num: 5, text: "Que diferença a suficiência das Escrituras faz na sua vida? - Ministério Fiel", url: "https://ministeriofiel.com.br/artigos/que-diferenca-a-suficiencia-das-escrituras-faz-na-sua-vida/" },
+                { num: 6, text: "Características distintivas do aconselhamento cristão - Ministério Fiel", url: "https://ministeriofiel.com.br/artigos/caracteristicas-distintivas-do-aconselhamento-cristao/" },
+                { num: 7, text: "O Aconselhamento Bíblico e a Psicologia Cristã | PDF - SlideShare", url: "https://pt.slideshare.net/slideshow/o-aconselhamento-bblico-e-a-psicologia-crist/265741790" },
+                { num: 8, text: "Psicologia, psiquiatria e Bíblia: uma possível interação? – Parte 3", url: "https://conselhobiblico.com/2015/05/28/psicologia-e-biblia-uma-possivel-interacao-parte-3/" },
+                { num: 9, text: "Imago Dei - Ministério Fiel", url: "https://ministeriofiel.com.br/artigos/imago-dei/" },
+                { num: 10, text: "A doutrina da depravação total ensina que perdemos a imagem de Deus?", url: "https://voltemosaoevangelho.com/blog/2020/09/a-doutrina-da-depravacao-total-ensina-que-perdemos-a-imagem-de-deus/" },
+                { num: 11, text: "TULIP e a teologia reformada: depravação total - Ministério Ligonier", url: "https://pt.ligonier.org/artigos/tulip-e-a-teologia-reformada-depravacao-total/" },
+                { num: 12, text: "Teologia e a Depravação Total: A Natureza Humana e o Clamor por Redenção - IBRATEO", url: "https://ibrateo.org.br/teologia-e-a-depravacao-total-a-natureza-humana-e-o-clamor-por-redencao/" },
+                { num: 13, text: "Imago Dei: Antropologia Reformada (Paulo Anglada) - Loja Virtual Knox Publicações", url: "https://loja.knoxpublicacoes.com.br/teologia/imago-dei-antropologia-reformada-paulo-anglada" },
+                { num: 14, text: "What Is Humanistic Psychology – Association for Humanistic...", url: "https://ahpweb.org/what-is-humanistic-psychology/" },
+                { num: 15, text: "Teorias psicanalíticas de Sigmund Freud – Wikipédia, a...", url: "https://pt.wikipedia.org/wiki/Teorias_psicanal%C3%ADticas_de_Sigmund_Freud" },
+                { num: 16, text: "Quem foi Skinner? Conheça a Teoria do Behaviorismo Radical", url: "https://www.brasilparalelo.com.br/artigos/quem-foi-skinner" },
+                { num: 17, text: "A Doutrina da Graça Comum: Explorando suas Origens... | by Gui | Medium", url: "https://medium.com/@guifortkamprosa/a-doutrina-da-gra%C3%A7a-comum-explorando-suas-origens-fundamentos-e-implica%C3%A7%C3%B5es-3a388678c535" },
+                { num: 21, text: "Cristo, o Senhor da Psicologia - Associação Brasileira de Cristãos na Ciência", url: "https://cristaosnaciencia.org.br/cristo-o-senhor-da-psicologia/" },
+                { num: 22, text: "Terapia Cognitivo Comportamental: princípios, técnicas e mais! - Sanar Saúde", url: "https://blog.sanarsaude.com/portal/carreiras/artigos-noticias/terapia-cognitivo-comportamental-principios-tecnicas-psicologia" },
+                { num: 32, text: "Terapia cognitivo-comportamental: como funciona, evidências e...", url: "https://artmed.com.br/artigos/terapia-cognitivo-comportamental-como-funciona-evidencias-e-como-aplicar" },
+                { num: 34, text: "About Us | Christian Counseling & Educational Foundation - CCEF", url: "https://www.ccef.org/about/" },
+                { num: 36, text: "O que é o aconselhamento noutético? | GotQuestions.org/Portugues", url: "https://www.gotquestions.org/Portugues/aconselhamento-nouthetico.html" },
+                { num: 40, text: "Aconselhamento cristão na igreja: qual é o papel e por que importa - FTBB", url: "https://ftbb.edu.br/aconselhamento-cristao-na-igreja/" },
+                { num: 44, text: "Transtorno Bipolar e a Perspectiva Bíblica - Igreja Batista Fonte", url: "https://www.igrejafonte.org.br/_fonte/conteudo/eventos/120707outros_apostila.pdf" },
+                { num: 51, text: "O sofrimento e a glória de Deus - Ministério Ligonier", url: "https://pt.ligonier.org/artigos/o-sofrimento-e-a-gloria-de-deus/" },
+                { num: 56, text: "Modelo BioPsicoSocial-Espiritual - Eduardo Pécora", url: "https://www.epecora.com.br/modelo-biopsicosocial-espiritual/" },
+                { num: 57, text: "O MAL ESTAR DO SER COMO DESAFIO À ÉTICA E À TEOLOGIA | Revista Relegens Thréskeia - Periódicos UFPR", url: "https://revistas.ufpr.br/relegens/article/view/44338" },
+                { num: 61, text: "O pensamento crítico, a Bíblia e o cristão - Journal of Adventist Education", url: "https://www.journalofadventisteducation.org/pt/2020.82.4.4" },
+                { num: 63, text: "List of books by author David A. Powlison - ThriftBooks", url: "https://www.thriftbooks.com/a/david-a-powlison/215161/" },
+            ];
+
+            // --- ELEMENTOS DO DOM ---
+            const menuButtons = document.querySelectorAll('.menu-button');
+            const contentSections = document.querySelectorAll('.content-section');
+            const mainContent = document.getElementById('main-content');
+            
+            // Mobile Menu
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenuContainer = document.getElementById('mobile-menu-container');
+            const closeMobileMenuButton = document.getElementById('close-mobile-menu-button');
+            const mobileMenuContent = document.getElementById('mobile-menu-content');
+
+            // Flashcards
+            const flashcardContainer = document.getElementById('flashcard-container');
+            const flashcardQuestion = document.getElementById('flashcard-question');
+            const flashcardAnswer = document.getElementById('flashcard-answer');
+            const prevFlashcardBtn = document.getElementById('prev-flashcard');
+            const nextFlashcardBtn = document.getElementById('next-flashcard');
+            const flashcardCounter = document.getElementById('flashcard-counter');
+            let currentFlashcardIndex = 0;
+
+            // Quiz
+            const quizContainer = document.getElementById('quiz-container');
+            const quizQuestionArea = document.getElementById('quiz-question-area');
+            const quizResultsArea = document.getElementById('quiz-results-area');
+            const questionNumberEl = document.getElementById('question-number');
+            const totalQuestionsEl = document.getElementById('total-questions');
+            const quizScoreEl = document.getElementById('quiz-score');
+            const quizQuestionEl = document.getElementById('quiz-question');
+            const quizOptionsEl = document.getElementById('quiz-options');
+            const quizFeedbackEl = document.getElementById('quiz-feedback');
+            const finalScoreEl = document.getElementById('final-score');
+            const totalScoreEl = document.getElementById('total-score');
+            const scoreMessageEl = document.getElementById('score-message');
+            const restartQuizBtn = document.getElementById('restart-quiz');
+            let currentQuestionIndex = 0;
+            let score = 0;
+
+            // Referências
+            const referencesList = document.getElementById('references-list');
+
+            // --- FUNÇÕES ---
+
+            // Função para mostrar o conteúdo
+            function showContent(targetId) {
+                contentSections.forEach(section => {
+                    section.classList.add('hidden');
+                });
+                const activeSection = document.getElementById(targetId);
+                if (activeSection) {
+                    activeSection.classList.remove('hidden');
+                    mainContent.scrollTop = 0;
+                }
+
+                menuButtons.forEach(button => {
+                    if (button.dataset.target === targetId) {
+                        button.classList.add('active');
+                    } else {
+                        button.classList.remove('active');
+                    }
+                });
+
+                // Fecha o menu mobile ao selecionar um item
+                if (mobileMenuContainer.classList.contains('translate-x-0')) {
+                    mobileMenuContainer.classList.remove('translate-x-0');
+                    mobileMenuContainer.classList.add('-translate-x-full');
+                }
+            }
+            
+            // Navegação do Menu
+            menuButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+                    showContent(targetId);
+                });
+            });
+
+            // Lógica do Menu Mobile
+            function populateMobileMenu() {
+                const allButtons = document.querySelectorAll('#desktop-menu-left .menu-button, #desktop-menu-right .menu-button');
+                allButtons.forEach(button => {
+                    const clone = button.cloneNode(true);
+                    clone.addEventListener('click', () => {
+                        const targetId = clone.dataset.target;
+                        showContent(targetId);
+                    });
+                    mobileMenuContent.appendChild(clone);
+                });
+            }
+
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenuContainer.classList.remove('-translate-x-full');
+                mobileMenuContainer.classList.add('translate-x-0');
+            });
+
+            closeMobileMenuButton.addEventListener('click', () => {
+                mobileMenuContainer.classList.remove('translate-x-0');
+                mobileMenuContainer.classList.add('-translate-x-full');
+            });
+            
+            mobileMenuContainer.addEventListener('click', (e) => {
+                if (e.target === mobileMenuContainer) {
+                    mobileMenuContainer.classList.remove('translate-x-0');
+                    mobileMenuContainer.classList.add('-translate-x-full');
+                }
+            });
+
+            // Lógica dos Flashcards
+            function displayFlashcard() {
+                const card = flashcardsData[currentFlashcardIndex];
+                flashcardQuestion.textContent = card.q;
+                flashcardAnswer.textContent = card.a;
+                flashcardContainer.classList.remove('flipped');
+                flashcardCounter.textContent = `${currentFlashcardIndex + 1} / ${flashcardsData.length}`;
+            }
+
+            flashcardContainer.addEventListener('click', () => {
+                flashcardContainer.classList.toggle('flipped');
+            });
+
+            nextFlashcardBtn.addEventListener('click', () => {
+                currentFlashcardIndex = (currentFlashcardIndex + 1) % flashcardsData.length;
+                displayFlashcard();
+            });
+
+            prevFlashcardBtn.addEventListener('click', () => {
+                currentFlashcardIndex = (currentFlashcardIndex - 1 + flashcardsData.length) % flashcardsData.length;
+                displayFlashcard();
+            });
+            
+            // Lógica do Quiz
+            function startQuiz() {
+                currentQuestionIndex = 0;
+                score = 0;
+                quizScoreEl.textContent = score;
+                quizQuestionArea.classList.remove('hidden');
+                quizResultsArea.classList.add('hidden');
+                displayQuestion();
+            }
+
+            function displayQuestion() {
+                if (currentQuestionIndex >= quizData.length) {
+                    showResults();
+                    return;
+                }
+                const question = quizData[currentQuestionIndex];
+                questionNumberEl.textContent = currentQuestionIndex + 1;
+                quizQuestionEl.textContent = question.q;
+                quizOptionsEl.innerHTML = '';
+                
+                // Embaralhar opções
+                const options = [...question.o].sort(() => Math.random() - 0.5);
+
+                options.forEach(optionText => {
+                    const button = document.createElement('button');
+                    button.textContent = optionText;
+                    button.classList.add('quiz-option', 'w-full', 'p-4', 'border-2', 'rounded-lg', 'text-left', 'font-semibold');
+                    button.addEventListener('click', () => checkAnswer(optionText, button));
+                    quizOptionsEl.appendChild(button);
+                });
+            }
+
+            function checkAnswer(selectedAnswer, button) {
+                const question = quizData[currentQuestionIndex];
+                const isCorrect = selectedAnswer === question.a;
+
+                Array.from(quizOptionsEl.children).forEach(btn => {
+                    btn.classList.add('disabled');
+                    if(btn.textContent === question.a) {
+                        btn.classList.add('correct');
+                    }
+                });
+
+                if (isCorrect) {
+                    score++;
+                    quizScoreEl.textContent = score;
+                    button.classList.add('correct');
+                    showFeedback('Correto! ✨', 'correct');
+                } else {
+                    button.classList.add('incorrect');
+                    showFeedback(`Incorreto. A resposta certa é: "${question.a}"`, 'incorrect');
+                }
+
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    quizFeedbackEl.classList.add('hidden');
+                    displayQuestion();
+                }, 2500);
+            }
+
+            function showFeedback(message, type) {
+                quizFeedbackEl.textContent = message;
+                quizFeedbackEl.classList.remove('hidden', 'correct', 'incorrect');
+                quizFeedbackEl.classList.add(type);
+            }
+
+            function showResults() {
+                quizQuestionArea.classList.add('hidden');
+                quizResultsArea.classList.remove('hidden');
+                finalScoreEl.textContent = score;
+                
+                const percentage = (score / quizData.length) * 100;
+                let message = "";
+                if (percentage === 100) {
+                    message = "Excelente! Você dominou o conteúdo. Soli Deo Gloria!";
+                } else if (percentage >= 75) {
+                    message = "Muito bom! Você tem um ótimo entendimento do assunto.";
+                } else if (percentage >= 50) {
+                    message = "Bom trabalho! Continue revisando para fortalecer os conceitos.";
+                } else {
+                    message = "Não desanime! Reveja os capítulos e os flashcards para tentar novamente.";
+                }
+                scoreMessageEl.textContent = message;
+            }
+
+            restartQuizBtn.addEventListener('click', startQuiz);
+
+            // Lógica das Referências
+            function populateReferences() {
+                referencesData.forEach(ref => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = ref.url;
+                    a.textContent = ref.text;
+                    a.target = "_blank";
+                    a.rel = "noopener noreferrer";
+                    a.classList.add('text-blue-600', 'hover:text-blue-800', 'hover:underline', 'transition');
+                    li.appendChild(a);
+                    referencesList.appendChild(li);
+                });
+            }
+
+            // --- INICIALIZAÇÃO ---
+            showContent('prefacio'); // Mostrar a primeira seção ao carregar
+            displayFlashcard(); // Inicializar o primeiro flashcard
+            
+            // Inicializar o Quiz
+            totalQuestionsEl.textContent = quizData.length;
+            totalScoreEl.textContent = quizData.length;
+            startQuiz();
+
+            // Popular a lista de referências
+            populateReferences();
+
+            // Popular o menu mobile
+            populateMobileMenu();
+        });
+    </script>
+</body>
+</html>
